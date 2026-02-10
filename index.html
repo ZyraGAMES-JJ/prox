@@ -1,0 +1,92 @@
+<script src="https://unpkg.com/psl@latest/dist/psl.umd.cjs"></script>
+<script>
+function encode(str) {
+  if (!str) return str;
+  return encodeURIComponent(
+    str
+      .toString()
+      .split('')
+      .map((char, ind) => ind % 2 ? String.fromCharCode(char.charCodeAt() ^ 2) : char)
+      .join('')
+  );
+}
+function isValidURL(string) {
+  try {
+    new URL(string);
+    return true;
+  } catch (err) {
+    return false;
+  }
+}
+function openprox() {
+    var parsed = psl.parse(location.hostname);
+    document.getElementById('swframe').src='https://pb.' + parsed["sld"] + "." + parsed["tld"]
+    if (isValidURL(document.getElementById('search').value)) {
+        document.getElementById('frame').src='https://pb.' + parsed["sld"] + "." + parsed["tld"] + '/~/' + encode(document.getElementById('search').value)
+    } else {
+        document.getElementById('frame').src='https://pb.' + parsed["sld"] + "." + parsed["tld"] + '/~/' + encode('https://duckduckgo.com/?q=' + document.getElementById('search').value)
+    }
+    document.getElementById('frame').style.display = 'block';
+}
+var popupWindow;
+
+function openPopup() {
+    var parsedd = psl.parse(location.hostname);
+    var url = 'https://pb.' + parsedd["sld"] + "." + parsedd["tld"]
+    var name = "swreg";
+    var features = "width=400,height=300,resizable=yes,scrollbars=yes";
+
+    popupWindow = window.open(url, name, features);
+}
+function closePopup() {
+  if (popupWindow && !popupWindow.closed) {
+    popupWindow.close();
+  } else {
+    alert("The popup is already closed or was never opened.");
+  }
+}
+function init() {
+    openPopup();
+    setTimeout(closePopup, 500);
+}
+</script>
+<style>
+body {
+    margin: 0px;
+    padding: 0px;
+    background: #000000;
+}
+#frame {
+    height: 100%;
+    width: 100%;
+    position: absolute;
+    z-index: 999999;
+    margin: 0px;
+    border: 0px solid black;
+}
+#search {
+    padding: 10px;
+    background: #1a1a1a;
+    border: 2px solid #00ffff;
+    color: #00ffff;
+    font-size: 14px;
+}
+button {
+    padding: 10px 20px;
+    background: #00ffff;
+    color: #000000;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+}
+button:hover {
+    background: #00cccc;
+}
+</style>
+<iframe onload="init()" src="https://example.com" style="display: none;"></iframe>
+<body>
+<iframe src="" id="swframe" style="display: none;"></iframe>
+<iframe src="" id="frame" style="display: none;"></iframe>
+<input id="search">
+<button onclick="openprox()">Go</button>
+</body>
